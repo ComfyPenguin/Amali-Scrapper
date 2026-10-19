@@ -1,14 +1,25 @@
-# Budget Tracker
+![Banner](assets/banner.png)
 
-Aplicación web personal para construir presupuestos de compra a partir de productos de **Amazon ES** y **AliExpress ES**. Pega una URL, la app extrae automáticamente la foto, el nombre y el precio, y calcula el total a medida que ajustas las cantidades.
+Aplicación web personal para construir presupuestos de compra a partir de productos de **Amazon**, **AliExpress** e **IKEA**. Pega una URL, la app extrae automáticamente la foto, el nombre y el precio, y calcula el total a medida que ajustas las cantidades.
 
-![Budget Tracker](assets/banner.png)
+![Demo de Budget Tracker](screenshots/demo.gif)
+
+## Overview
+
+Proyecto personal full-stack (React + Vite + Tailwind en el frontend, Express + TypeScript en el backend) que resuelve un problema real: comparar y sumar productos de varias tiendas sin copiar precios a mano.
+
+- **Pega una URL** y la tarjeta aparece con foto, título, precio y origen (Amazon, AliExpress, IKEA).
+- **Ajusta cantidades** y el subtotal y el total del presupuesto se recalculan al instante.
+- **Refresca precios** automáticamente al abrir la app y añade productos manualmente si el scraping falla.
+- **Tema claro y oscuro** con persistencia, y panel de sesión para AliExpress.
 
 ---
 
 ## Características
 
-- **Scraping automático** de Amazon ES (axios + cheerio) y AliExpress ES (Puppeteer headless)
+- **Scraping automático** de Amazon ES e IKEA ES (axios + cheerio) y AliExpress ES (Puppeteer headless)
+- **Entrada manual** de productos cuando no hay URL o el scraping falla
+- **Refresco de precios** al abrir la app y detección de productos duplicados
 - **Sesión persistente** en AliExpress — inicia sesión una vez y la app reutiliza tu cuenta para ver tus precios reales
 - **Edición de cantidades** con recálculo instantáneo de subtotales y total global
 - **Persistencia local** en JSON — sin base de datos externa
@@ -94,8 +105,9 @@ amali-scrapper/
 │   │   ├── routes/
 │   │   │   └── products.ts   # Endpoints REST
 │   │   ├── scrapers/
-│   │   │   ├── index.ts      # Factory: detecta amazon vs aliexpress
+│   │   │   ├── index.ts      # Factory: detecta amazon, aliexpress o ikea
 │   │   │   ├── amazon.ts     # axios + cheerio
+│   │   │   ├── ikea.ts       # axios + cheerio
 │   │   │   └── aliexpress.ts # Puppeteer headless + sesión persistente
 │   │   └── db/
 │   │       └── database.ts   # Lectura/escritura JSON
@@ -128,6 +140,7 @@ amali-scrapper/
 |--------|------|-------------|
 | `POST` | `/api/scrape` | Scrape de una URL (no guarda) |
 | `GET` | `/api/products` | Lista todos los productos |
+| `POST` | `/api/products/refresh` | Vuelve a scrapear precios e imágenes de los productos guardados |
 | `POST` | `/api/products` | Guarda un producto |
 | `PATCH` | `/api/products/:id` | Actualiza la cantidad |
 | `DELETE` | `/api/products/:id` | Elimina un producto |
@@ -143,7 +156,7 @@ amali-scrapper/
 | Paquete | Uso |
 |---|---|
 | `express` | Servidor HTTP |
-| `axios` + `cheerio` | Scraping de Amazon (HTML estático) |
+| `axios` + `cheerio` | Scraping de Amazon e IKEA (HTML estático) |
 | `puppeteer` | Scraping de AliExpress (JS dinámico) |
 | `uuid` | IDs únicos para productos |
 
@@ -160,5 +173,6 @@ amali-scrapper/
 ## Limitaciones conocidas
 
 - **Amazon** puede devolver un CAPTCHA si se hacen muchas peticiones en poco tiempo. La app muestra un error claro en ese caso — espera unos minutos y vuelve a intentarlo.
+- **IKEA** puede cambiar su marcado; el scraper está en `backend/src/scrapers/ikea.ts`.
 - **AliExpress** cambia su estructura HTML con frecuencia. Si el scraping falla, los selectores están en `backend/src/scrapers/aliexpress.ts`.
 - Los precios se muestran siempre en **EUR** independientemente del origen del producto.
