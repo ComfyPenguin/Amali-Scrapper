@@ -2,7 +2,7 @@
 
 Aplicación web personal para construir presupuestos de compra a partir de productos de **Amazon**, **AliExpress** e **IKEA**. Pega una URL, la app extrae automáticamente la foto, el nombre y el precio, y calcula el total a medida que ajustas las cantidades.
 
-![Demo de Budget Tracker](screenshots/demo.gif)
+<img src="screenshots/demo.gif" alt="Demo de Budget Tracker" width="100%">
 
 ## Overview
 
